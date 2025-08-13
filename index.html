@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,25 +8,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            overflow: hidden !important;
-            height: 100vh;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            margin: 0;
-            padding: 0;
             background-image: url('assets/audio/background.jpg');
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            min-height: 100vh;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
         }
         
         html {
-            overflow: hidden !important;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
+            height: 100%;
         }
         
         * {
@@ -230,7 +228,7 @@
             constructor() {
                 this.level = 1;
                 this.correct = 0;
-                this.initialTime = 300; // 5 menit
+                this.initialTime = 300;
                 this.timeLeft = this.initialTime;
                 this.gameActive = false;
                 this.timer = null;
@@ -257,14 +255,11 @@
             handleAudio() {
                 const audio = document.getElementById('backgroundAudio');
                 
-                // Coba putar audio secara otomatis, tapi ini mungkin diblokir browser
                 const playPromise = audio.play();
 
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        // Autoplay berhasil
                     }).catch(() => {
-                        // Autoplay diblokir, tambahkan event listener untuk interaksi pertama
                         document.addEventListener('click', () => {
                             if (audio.paused) {
                                 audio.play();
@@ -395,7 +390,6 @@
                 dropZone.innerHTML = colorData.emoji;
                 this.currentPattern[index] = colorData;
                 
-                // Add success animation
                 dropZone.classList.add('success-animation');
                 setTimeout(() => dropZone.classList.remove('success-animation'), 600);
             }
@@ -425,7 +419,6 @@
                         this.draggedElement = null;
                     });
                     
-                    // Touch/click support
                     piece.addEventListener('click', () => {
                         if (this.gameActive) {
                             document.querySelectorAll('.puzzle-piece').forEach(p => p.classList.remove('ring-4', 'ring-blue-400'));
@@ -610,3 +603,4 @@
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e95e1283ba5f6a',t:'MTc1NTEwMDIxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
