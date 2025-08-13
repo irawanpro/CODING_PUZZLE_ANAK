@@ -1,915 +1,612 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Tebak Suara Hewan!</title>
+    <meta name="viewport" content="width=device-width, initial-1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Game Motorik Halus - Susun Puzzle Warna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Desain Umum dan Font */
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;700&display=swap');
-
         body {
-            font-family: 'Open Sans', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: url('assets/audio/background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: #333;
-            overflow: hidden; /* Mengunci scrolling pada body */
-            
-            /* Penyesuaian baru untuk mengunci tampilan */
-            width: 100vw;
+            overflow: hidden !important;
             height: 100vh;
-            box-sizing: border-box;
-            position: relative;
-            
-            /* Menggunakan transform untuk menskalakan body ke 67% */
-            /* Catatan: Ini akan mengunci tampilan pada zoom 67% */
-            transform: scale(0.67);
-            transform-origin: top left;
-            width: 149.25%; /* 100 / 0.67 = ~149.25 */
-            height: 149.25%;
-        }
-
-        .game-container {
-            background-color: rgba(255, 255, 255, 0.85);
-            border-radius: 25px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            text-align: center;
-            max-width: 650px;
-            width: 90%;
-            transform: scale(0.95);
-            animation: bounceIn 0.8s ease-out forwards;
-            position: relative;
-            overflow: hidden;
-            border: 5px solid #FF6347;
-            box-sizing: border-box;
-            
-            /* Menyesuaikan ulang agar tetap terlihat saat di-zoom out */
-            min-width: 500px; /* Menambah ukuran minimum agar tidak terlalu kecil */
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            70% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); }
-        }
-
-        .game-container::before, .game-container::after {
-            content: '';
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            filter: blur(20px);
-            z-index: 0;
-        }
-
-        .game-container::before {
-            width: 150px;
-            height: 150px;
-            top: -50px;
-            left: -50px;
-        }
-
-        .game-container::after {
-            width: 100px;
-            height: 100px;
-            bottom: -30px;
-            right: -30px;
-        }
-
-        h1 {
-            font-family: 'Fredoka One', cursive;
-            color: #FF6347;
-            margin-bottom: 25px;
-            font-size: 2.8em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .volume-control {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            z-index: 10;
-        }
-
-        .volume-control label {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.1em;
-            color: #555;
-        }
-
-        .volume-control input[type="range"] {
-            -webkit-appearance: none;
-            width: 100px;
-            height: 8px;
-            background: #ddd;
-            border-radius: 5px;
-            outline: none;
-            transition: opacity .2s;
-        }
-
-        .volume-control input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .volume-control input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Penyesuaian ukuran font untuk informasi pertanyaan dan skor */
-        .current-question-info {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.5em; /* Ukuran font diperbesar */
-            color: #4CAF50;
-            margin-bottom: 10px;
-        }
-
-        .score-display {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8em; /* Ukuran font diperbesar */
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
-
-        .question-mark-display {
-            font-size: 8em;
-            background-color: #333;
-            color: white;
-            border-radius: 50%;
-            width: 1.5em;
-            height: 1.5em;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 30px auto;
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out;
-            animation: pulse 1.5s infinite alternate;
-            line-height: 1;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
-        }
-
-        .question-mark-display:hover {
-            transform: scale(1.1);
-        }
-
-        .instructions-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            gap: 10px;
-        }
-
-        .instructions-text {
-            font-style: italic;
-            color: #555;
-            font-size: 1.1em;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
             margin: 0;
+            padding: 0;
+            background-image: url('assets/audio/background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
-
-        .instruction-button {
-            background-color: #1E90FF;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        
+        html {
+            overflow: hidden !important;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
         }
-
-        .instruction-button:hover {
-            background-color: #007BFF;
+        
+        * {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
+        }
+        
+        .puzzle-piece {
+            transition: all 0.3s ease;
+            cursor: grab;
+            user-select: none;
+        }
+        
+        .puzzle-piece:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+            z-index: 1000;
+        }
+        
+        .puzzle-piece.dragging {
+            opacity: 0.8;
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+        }
+        
+        .drop-zone {
+            transition: all 0.3s ease;
+            border: 3px dashed #cbd5e1;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
             transform: scale(1.05);
         }
-
-        .instruction-button:active {
-            transform: scale(0.95);
+        
+        .drop-zone.filled {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.1);
         }
-
-        .choices-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-            margin-bottom: 20px;
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-
-        .choice-button {
-            background-color: #87CEEB;
-            color: white;
-            padding: 15px 10px;
-            border: none;
-            border-radius: 15px;
-            font-size: 3em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.3s ease-in-out;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            font-family: 'Fredoka One', cursive;
-            letter-spacing: 1px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
         }
-
-        .choice-button:hover {
-            background-color: #6495ED;
-            transform: translateY(-3px);
+        
+        .success-animation {
+            animation: bounce 0.6s ease-in-out;
         }
-
-        .choice-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        
+        .wrong-animation {
+            animation: wiggle 0.5s ease-in-out;
         }
-
-        .choice-button.correct-feedback {
-            background-color: #4CAF50;
-            animation: correctPulse 0.5s forwards;
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
         }
-
-        .choice-button.wrong-feedback {
-            background-color: #F44336;
-            animation: wrongShake 0.5s forwards;
+        
+        .sparkle {
+            animation: sparkle 1s ease-in-out;
         }
-
-        @keyframes correctPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes wrongShake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
-
-        #feedback {
-            margin-top: 25px;
-            font-size: 1.5em;
-            font-weight: bold;
-            min-height: 1.8em;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        /* Gaya untuk pesan GAME SELESAI */
-        .game-over-message {
-            font-family: 'Fredoka One', cursive;
-            color: #FF6347;
-            font-size: 3.5em;
-            margin-top: 50px;
-            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.15);
-            animation: fadeInScale 1s ease-out forwards;
-        }
-
-        /* Gaya untuk teks Skor Akhir */
-        .final-score-text {
-            font-family: 'Fredoka One', cursive;
-            color: #4CAF50;
-            font-size: 1.8em;
-            margin-top: 20px;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        @keyframes fadeInScale {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .main-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.5em;
-            font-family: 'Fredoka One', cursive;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .main-button:hover {
-            background-color: #45a049;
-            transform: translateY(-3px);
-        }
-
-        .main-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        /* --- Gaya untuk Fakta Menarik --- */
-        #factsScreen {
-            display: none;
-            padding: 20px;
-            text-align: left;
-            max-height: 70vh;
-            overflow-y: auto;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        #factsScreen::-webkit-scrollbar {
-            display: none;
-        }
-
-        .facts-title {
-            font-family: 'Fredoka One', cursive;
-            color: #FF6347;
-            font-size: 2.5em;
-            margin-bottom: 25px;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .fact-item {
-            margin-bottom: 20px;
-            border-bottom: 1px dashed #ccc;
-            padding-bottom: 15px;
-        }
-
-        .fact-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .fact-item h3 {
-            font-family: 'Fredoka One', cursive;
-            color: #1E90FF;
-            font-size: 1.6em;
-            margin-top: 0;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .fact-speaker-button {
-            background: none;
-            border: none;
-            font-size: 1.2em;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-            margin-left: 5px;
-            transition: transform 0.1s ease-in-out;
-        }
-
-        .fact-speaker-button:hover {
-            transform: scale(1.1);
-        }
-
-        .fact-speaker-button:active {
-            transform: scale(0.9);
-        }
-
-        .fact-item p {
-            font-family: 'Open Sans', sans-serif;
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #444;
-            text-align: justify;
-        }
-
-        .fact-navigation {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        /* Gaya untuk tombol navigasi emoji */
-        .fact-navigation .emoji-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 50%; /* Membuat tombol menjadi lingkaran */
-            font-size: 2em; /* Ukuran emoji */
-            width: 60px; /* Ukuran tombol (sesuaikan) */
-            height: 60px; /* Ukuran tombol (sesuaikan) */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            font-family: 'Fredoka One', cursive;
-        }
-
-        .fact-navigation .emoji-button:hover {
-            background-color: #45a049;
-            transform: translateY(-3px);
-        }
-
-        .fact-navigation .emoji-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        /* --- Gaya untuk Watermark Kredit (diperbarui) --- */
-        .credit-watermark {
-            display: none;
+        
+        #instructionModal {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            transform: none;
-            text-align: left;
-            font-family: 'Open Sans', sans-serif;
-            color: #FFFFFF;
-            font-size: 0.9em;
-            text-shadow: 
-                1px 1px 0 #000,
-                -1px 1px 0 #000,
-                1px -1px 0 #000,
-                -1px -1px 0 #000;
-            z-index: 1000;
-            line-height: 1.1;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            background-image: url('assets/audio/background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
         }
-
-        .credit-watermark p {
-            margin: 0;
-        }
-
-        .credit-watermark .contact-link {
-            color: #87CEFA;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .credit-watermark .contact-link:hover {
-            color: #FFFFFF;
-        }
-
-        /* Responsif untuk layar kecil */
-        @media (max-width: 768px) {
-            .credit-watermark {
-                bottom: 10px;
-                left: 10px;
-            }
-            .fact-navigation .emoji-button {
-                width: 50px;
-                height: 50px;
-                font-size: 1.8em;
-            }
-        }
-        @media (max-width: 600px) {
-            body {
-                /* Perubahan ini diganti oleh transform di atas */
-                /* transform: scale(1); */
-                /* width: 100%; */
-            }
+        
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
-<body>
-    <div class="game-container">
-        <div class="volume-control">
-            <label for="volumeSlider">Musik:</label>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
-        </div>
-
-        <div id="gameScreen">
-            <h1>Tebak Suara Hewan! 🐾</h1>
-            <div class="current-question-info" id="questionInfo">Pertanyaan 1 dari 10</div>
-            <div class="score-display">Skor: <span id="score">0</span></div>
-            <div class="question-mark-display" id="questionMarkDisplay">?</div>
-            
-            <div class="instructions-container">
-                <p class="instructions-text" id="instructionsText">Klik tanda tanya untuk mendengar suaranya. Lalu, pilih emoji hewan yang benar!</p>
-                <button class="instruction-button" id="playInstructionSound">🔊</button>
-            </div>
-            
-            <div class="choices-container" id="choicesContainer">
-            </div>
-            <div id="feedback"></div>
-        </div>
-
-        <div id="gameOverScreen" style="display: none;">
-            <div class="game-over-message" id="gameOverText">GAME SELESAI</div>
-            <div class="final-score-text" id="finalScoreText"></div>
-            <button class="main-button" id="showFactsButton">FAKTA MENARIK</button>
-        </div>
-
-        <div id="factsScreen" style="display: none;">
-            <h2 class="facts-title">FAKTA MENARIK 🧠</h2>
-            <div id="factsContent">
-            </div>
-            <div class="fact-navigation">
-                <button class="emoji-button" id="previousFactButton" style="display: none;">⬅️</button>
-                <button class="emoji-button" id="nextFactButton" style="display: none;">➡️</button>
-                <button class="emoji-button" id="playAgainButton" style="display: none;">🔄</button>
-            </div>
-        </div>
-    </div>
+<body class="bg-gradient-to-br from-purple-200 via-pink-100 to-blue-200 h-screen flex flex-col">
     
-    <div id="creditWatermark" class="credit-watermark">
-        <p>Created on: GlowandGrow</p>
-        <p>Contact person: <a href="mailto:+6289629065679/Rahma" class="contact-link">+6289629065679/Rahma</a></p>
+    <audio id="backgroundAudio" src="assets/audio/background_music.mp3" autoplay loop></audio>
+
+    <div class="flex-1 flex items-center justify-center px-1 py-1">
+        <div class="max-w-4xl w-full">
+            <div class="text-center mb-2">
+                <h1 class="text-lg font-bold text-purple-800 mb-1">🧩 Susun Puzzle Warna 🎨</h1>
+                <div class="flex justify-center items-center gap-2 text-xs font-semibold mb-2">
+                    <div class="bg-white rounded-full px-2 py-1 shadow-lg">
+                        <span class="text-green-600">Benar: </span>
+                        <span id="correct" class="text-green-800">0</span>
+                    </div>
+                    <div class="bg-white rounded-full px-2 py-1 shadow-lg">
+                        <span class="text-blue-600">Level: </span>
+                        <span id="level" class="text-blue-800">1</span>
+                    </div>
+                    <div class="bg-white rounded-full px-2 py-1 shadow-lg">
+                        <span class="text-orange-600">Waktu: </span>
+                        <span id="timer" class="text-orange-800">05:00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+                <div class="bg-white rounded-lg shadow-xl p-2">
+                    <div class="mb-2 flex flex-col items-center">
+                        <h3 class="text-sm font-bold text-center text-gray-700 mb-1">🎯 Contoh:</h3>
+                        <div id="targetPattern" class="grid gap-1 justify-center">
+                            </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <h3 class="text-sm font-bold text-center text-gray-700 mb-1">🧩 Buatmu:</h3>
+                        <div id="puzzleArea" class="grid gap-1 justify-center">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-xl p-2">
+                    <div class="flex flex-col items-center">
+                        <h3 class="text-sm font-bold text-center text-gray-700 mb-1">🎨 Pilih Warna:</h3>
+                        <div id="piecesContainer" class="grid grid-cols-3 gap-1 justify-center mb-2">
+                            </div>
+                    </div>
+                    
+                    <div class="text-center space-y-1">
+                        <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded-full shadow-lg transition-all duration-300 w-full text-xs">
+                            🗑️ Bersihkan
+                        </button>
+                        <button id="hintBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-2 rounded-full shadow-lg transition-all duration-300 w-full text-xs">
+                            💡 Petunjuk
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center space-x-1">
+                <button id="startBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 text-xs">
+                    🎮 Mulai
+                </button>
+                <button id="pauseBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 text-xs" disabled>
+                    ⏸️ Pause
+                </button>
+                <button id="newPatternBtn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-1 px-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 text-xs">
+                    🔄 Pola Baru
+                </button>
+            </div>
+        </div>
     </div>
 
-    <audio id="backgroundMusic" loop></audio>
-    <audio id="gameSound"></audio>
-    <audio id="feedbackSound"></audio>
-    <audio id="clickEffectSound"></audio>
-    <audio id="correctAnimalSound"></audio>
-    <audio id="factSoundPlayer"></audio>
+    <div id="instructionModal" class="fixed inset-0 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 md:p-8 text-center shadow-2xl max-w-sm md:max-w-md w-full">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 mb-4 animate-pulse">Cara Bermain</h2>
+            <ul class="list-disc list-inside text-left text-sm md:text-base text-gray-700 space-y-2 mb-6 font-semibold">
+                <li class="hover:text-blue-600 transition-colors duration-300">
+                    <span class="font-extrabold">1.</span> Lihat pola warna di bagian <span class="text-purple-600 font-extrabold">"Contoh"</span>.
+                </li>
+                <li class="hover:text-purple-600 transition-colors duration-300">
+                    <span class="font-extrabold">2.</span> Pilih warna dari <span class="text-red-500 font-extrabold">"Pilih Warna"</span> di sebelah kanan.
+                </li>
+                <li class="hover:text-pink-500 transition-colors duration-300">
+                    <span class="font-extrabold">3.</span> <span class="text-green-500 font-extrabold">Tarik dan letakkan</span> warna tersebut di kotak kosong pada <span class="text-blue-500 font-extrabold">"Buatmu"</span>.
+                </li>
+                <li class="hover:text-yellow-500 transition-colors duration-300">
+                    <span class="font-extrabold">4.</span> Selesaikan puzzle sebelum <span class="text-orange-500 font-extrabold">waktu habis</span>!
+                </li>
+            </ul>
+            <button id="closeInstructionBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all duration-300">
+                Ayo Mulai!
+            </button>
+            <div class="mt-4 text-xs text-gray-500">
+                <p>Created by: <span class="font-bold text-gray-700">GlowandGrow</span></p>
+                <p>Contact person: <a href="https://wa.me/6289629065679" class="text-blue-500 hover:underline">+6289629065679</a> / Rahma</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-3xl p-8 text-center shadow-2xl transform scale-95 max-w-md">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-3xl font-bold text-green-600 mb-2">Luar Biasa!</h2>
+            <p class="text-lg text-gray-700 mb-4">Kamu berhasil menyelesaikan puzzle!</p>
+            <div class="text-sm text-gray-600 mb-4">
+                <p>Waktu: <span id="completionTime" class="font-bold"></span> detik</p>
+                <p>Level: <span id="completionLevel" class="font-bold"></span></p>
+            </div>
+            <button id="nextLevelBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300">
+                Level Selanjutnya 🚀
+            </button>
+        </div>
+    </div>
 
     <script>
-        // ====================================================================
-        // PANDUAN PEMELIHARAAN KODE
-        // ====================================================================
-
-        // --- 1. MENAMBAH/MENGUBAH HEWAN (PERTANYAAN) DAN FAKTA MENARIK ---
-        // PENTING: Untuk suara fakta, Anda perlu menyiapkan file .mp3 di folder 'assets/audio/facts/'
-        // Contoh: assets/audio/facts/fakta_singa.mp3, assets/audio/facts/fakta_anjing.mp3, dst.
-        const animals = [
-            { name: "singa", emoji: "🦁", sound: "assets/audio/lion.mp3", correctSound: "assets/audio/yabenar_singa.mp3", fact: "Singa adalah satu-satunya kucing besar yang hidup berkelompok, disebut kebanggaan (pride).", factSound: "assets/audio/facts/fakta_singa.mp3" },
-            { name: "anjing", emoji: "🐶", sound: "assets/audio/dog.mp3", correctSound: "assets/audio/yabenar_anjing.mp3", fact: "Anjing dapat belajar hingga 250 kata dan isyarat, setara dengan anak berusia dua tahun.", factSound: "assets/audio/facts/fakta_anjing.mp3" },
-            { name: "kucing", emoji: "🐱", sound: "assets/audio/cat.mp3", correctSound: "assets/audio/yabenar_kucing.mp3", fact: "Kucing bisa melompat enam kali tinggi tubuhnya. Mereka juga menghabiskan 70% hidupnya untuk tidur.", factSound: "assets/audio/facts/fakta_kucing.mp3" },
-            { name: "gajah", emoji: "🐘", sound: "assets/audio/elephant.mp3", correctSound: "assets/audio/yabenar_gajah.mp3", fact: "Gajah adalah hewan darat terbesar dan memiliki ingatan yang luar biasa, bisa mengingat lokasi air bahkan setelah bertahun-tahun.", factSound: "assets/audio/facts/fakta_gajah.mp3" },
-            { name: "kambing", emoji: "🐐", sound: "assets/audio/goat.mp3", correctSound: "assets/audio/yabenar_kambing.mp3", fact: "Kambing memiliki pupil mata berbentuk persegi panjang, memberikan mereka penglihatan 320 derajat tanpa perlu menggerakkan kepala.", factSound: "assets/audio/facts/fakta_kambing.mp3" },
-            { name: "sapi", emoji: "🐄", sound: "assets/audio/cow.mp3", correctSound: "assets/audio/yabenar_sapi.mp3", fact: "Sapi bisa menghasilkan hingga 12 galon air liur per hari. Mereka juga punya empat perut.", factSound: "assets/audio/facts/fakta_sapi.mp3" },
-            { name: "ayam", emoji: "🐔", sound: "assets/audio/chicken.mp3", correctSound: "assets/audio/yabenar_ayam.mp3", fact: "Ayam adalah keturunan langsung dari dinosaurus. Mereka bahkan punya kerabat hidup yang disebut 'Red Junglefowl'.", factSound: "assets/audio/facts/fakta_ayam.mp3" },
-            { name: "kuda", emoji: "🐎", sound: "assets/audio/horse.mp3", correctSound: "assets/audio/yabenar_kuda.mp3", fact: "Kuda tidak bisa muntah. Ini membuat mereka rentan terhadap kolik yang bisa mengancam jiwa.", factSound: "assets/audio/facts/fakta_kuda.mp3" },
-            { name: "monyet", emoji: "🐒", sound: "assets/audio/monkey.mp3", correctSound: "assets/audio/yabenar_monyet.mp3", fact: "Ada lebih dari 260 spesies monyet yang dikenal. Mereka adalah kerabat dekat manusia.", factSound: "assets/audio/facts/fakta_monyet.mp3" },
-            { name: "burung", emoji: "🐦", sound: "assets/audio/bird.mp3", correctSound: "assets/audio/yabenar_burung.mp3", fact: "Hanya sekitar 10% dari spesies burung di dunia yang bersifat monogami seumur hidup.", factSound: "assets/audio/facts/fakta_burung.mp3" }
-        ];
-
-        // --- 2. MENGATUR JALUR SUARA GAME UTAMA DAN UMPAN BALIK ---
-        const gameSounds = {
-            backgroundMusic: "assets/audio/background_music.mp3",
-            clickEffect: "assets/audio/click.mp3",
-            instruction: "assets/audio/instruksi_tebak_suara.mp3",
-            correctFeedback: "assets/audio/benar_sekali.mp3",
-            wrongFeedback: "assets/audio/coba_lagi.mp3",
-        };
-
-        // --- 3. PENGATURAN DURASI SUARA DAN JEDA ---
-        const ANIMAL_SOUND_DURATION = 2000;
-        const DELAY_AFTER_FEEDBACK = 4000;
-        const CLICK_EFFECT_DELAY = 500;
-        const FACTS_PER_PAGE = 3;
-
-        // Variabel Status Game
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let choicesEnabled = true;
-        let answeredQuestions = [];
-        let shuffledFacts = [];
-        let currentFactPageIndex = 0;
-
-        // Referensi Elemen HTML
-        const questionMarkDisplayEl = document.getElementById('questionMarkDisplay');
-        const backgroundMusicEl = document.getElementById('backgroundMusic');
-        const gameSoundEl = document.getElementById('gameSound');
-        const feedbackSoundEl = document.getElementById('feedbackSound');
-        const clickEffectSoundEl = document.getElementById('clickEffectSound');
-        const volumeSliderEl = document.getElementById('volumeSlider');
-        const feedbackEl = document.getElementById('feedback');
-        const scoreEl = document.getElementById('score');
-        const choicesContainerEl = document.getElementById('choicesContainer');
-        const instructionsTextEl = document.getElementById('instructionsText');
-        const playInstructionSoundBtn = document.getElementById('playInstructionSound');
-        const questionInfoEl = document.getElementById('questionInfo');
-        const gameScreenEl = document.getElementById('gameScreen');
-        const gameOverScreenEl = document.getElementById('gameOverScreen');
-        const gameOverTextEl = document.getElementById('gameOverText');
-        const finalScoreTextEl = document.getElementById('finalScoreText');
-        const showFactsButton = document.getElementById('showFactsButton');
-        const factsScreenEl = document.getElementById('factsScreen');
-        const factsContentEl = document.getElementById('factsContent');
-        const previousFactButton = document.getElementById('previousFactButton');
-        const nextFactButton = document.getElementById('nextFactButton');
-        const playAgainButton = document.getElementById('playAgainButton');
-        const correctAnimalSoundEl = document.getElementById('correctAnimalSound');
-        const factSoundPlayerEl = document.getElementById('factSoundPlayer');
-        const creditWatermarkEl = document.getElementById('creditWatermark');
-
-
-        // Fungsi Utilitas
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function loadNewQuestion() {
-            if (currentQuestionIndex >= answeredQuestions.length) {
-                displayGameCompleted();
-                return;
+        class ColorPuzzleGame {
+            constructor() {
+                this.level = 1;
+                this.correct = 0;
+                this.initialTime = 300; // 5 menit
+                this.timeLeft = this.initialTime;
+                this.gameActive = false;
+                this.timer = null;
+                this.gridSize = 2;
+                this.colors = [
+                    { name: 'merah', class: 'bg-red-500', emoji: '🔴' },
+                    { name: 'biru', class: 'bg-blue-500', emoji: '🔵' },
+                    { name: 'hijau', class: 'bg-green-500', emoji: '🟢' },
+                    { name: 'kuning', class: 'bg-yellow-500', emoji: '🟡' },
+                    { name: 'ungu', class: 'bg-purple-500', emoji: '🟣' },
+                    { name: 'orange', class: 'bg-orange-500', emoji: '🟠' }
+                ];
+                this.targetPattern = [];
+                this.currentPattern = [];
+                this.draggedElement = null;
+                this.selectedColor = null;
+                
+                this.initializeGame();
+                this.showInstructionModal();
+                this.setupEventListeners();
+                this.handleAudio();
             }
 
-            choicesEnabled = true;
-            feedbackEl.textContent = '';
-            feedbackEl.className = '';
-
-            const currentAnimal = answeredQuestions[currentQuestionIndex];
-            questionMarkDisplayEl.textContent = '?';
-            
-            questionInfoEl.textContent = `Pertanyaan ${currentQuestionIndex + 1} dari ${answeredQuestions.length}`;
-
-            generateChoices(currentAnimal);
-        }
-
-        function generateChoices(correctAnimal) {
-            choicesContainerEl.innerHTML = '';
-
-            let choiceAnimals = animals.filter(a => a.name !== correctAnimal.name);
-            shuffleArray(choiceAnimals);
-
-            const selectedWrongChoices = choiceAnimals.slice(0, Math.min(3, animals.length - 1));
-            
-            let choices = [...selectedWrongChoices, correctAnimal];
-            shuffleArray(choices);
-
-            choices.forEach(animal => {
-                const button = document.createElement('button');
-                button.textContent = animal.emoji;
-                button.classList.add('choice-button');
-                button.onclick = () => checkAnswer(animal, correctAnimal, button);
-                choicesContainerEl.appendChild(button);
-            });
-        }
-
-        function playAnimalSoundWithEffect() {
-            clickEffectSoundEl.src = gameSounds.clickEffect;
-            clickEffectSoundEl.play().catch(e => console.error("Error playing click sound:", e));
-
-            questionMarkDisplayEl.style.transform = 'scale(1.1)';
-            setTimeout(() => questionMarkDisplayEl.style.transform = 'scale(1)', 200);
-
-            setTimeout(() => {
-                const currentAnimal = answeredQuestions[currentQuestionIndex];
-                gameSoundEl.src = currentAnimal.sound;
-                gameSoundEl.play().catch(e => console.error("Error playing animal sound:", e));
-
-                setTimeout(() => {
-                    gameSoundEl.pause();
-                    gameSoundEl.currentTime = 0;
-                }, ANIMAL_SOUND_DURATION);
-            }, CLICK_EFFECT_DELAY);
-        }
-
-        async function checkAnswer(selectedAnimal, correctAnimal, clickedButton) {
-            if (!choicesEnabled) return;
-
-            choicesEnabled = false;
-
-            const allButtons = choicesContainerEl.querySelectorAll('.choice-button');
-            allButtons.forEach(btn => {
-                btn.classList.remove('correct-feedback', 'wrong-feedback');
-            });
-
-            if (selectedAnimal.name === correctAnimal.name) {
-                feedbackEl.textContent = 'Benar! 🎉';
-                feedbackEl.classList.add('correct');
+            handleAudio() {
+                const audio = document.getElementById('backgroundAudio');
                 
-                correctAnimalSoundEl.src = correctAnimal.correctSound;
-                await correctAnimalSoundEl.play().catch(e => console.error("Error playing correct animal sound:", e));
+                // Coba putar audio secara otomatis, tapi ini mungkin diblokir browser
+                const playPromise = audio.play();
 
-                feedbackSoundEl.src = gameSounds.correctFeedback;
-                await feedbackSoundEl.play().catch(e => console.error("Error playing correct feedback sound:", e));
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Autoplay berhasil
+                    }).catch(() => {
+                        // Autoplay diblokir, tambahkan event listener untuk interaksi pertama
+                        document.addEventListener('click', () => {
+                            if (audio.paused) {
+                                audio.play();
+                            }
+                        }, { once: true });
+                        document.addEventListener('touchstart', () => {
+                            if (audio.paused) {
+                                audio.play();
+                            }
+                        }, { once: true });
+                    });
+                }
+            }
+            
+            showInstructionModal() {
+                const instructionModal = document.getElementById('instructionModal');
+                instructionModal.classList.remove('hidden');
+                this.gameActive = false;
+                document.getElementById('startBtn').disabled = true;
+            }
+            
+            hideInstructionModal() {
+                const instructionModal = document.getElementById('instructionModal');
+                instructionModal.classList.add('hidden');
+                document.getElementById('startBtn').disabled = false;
+            }
+            
+            initializeGame() {
+                this.generateTargetPattern();
+                this.createPuzzleGrid();
+                this.createColorPieces();
+                this.updateDisplay();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => this.startGame());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pauseGame());
+                document.getElementById('newPatternBtn').addEventListener('click', () => this.generateNewPattern());
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearPuzzle());
+                document.getElementById('hintBtn').addEventListener('click', () => this.showHint());
+                document.getElementById('nextLevelBtn').addEventListener('click', () => this.nextLevel());
                 
-                clickedButton.classList.add('correct-feedback');
-                score++;
-                scoreEl.textContent = score;
-                currentQuestionIndex++;
-
-                setTimeout(() => {
-                    loadNewQuestion();
-                }, DELAY_AFTER_FEEDBACK);
-            } else {
-                feedbackEl.textContent = `Salah. Jawaban yang benar adalah ${correctAnimal.name.charAt(0).toUpperCase() + correctAnimal.name.slice(1)}. 😞`;
-                feedbackEl.classList.add('wrong');
-                feedbackSoundEl.src = gameSounds.wrongFeedback;
-                await feedbackSoundEl.play().catch(e => console.error("Error playing wrong feedback sound:", e));
-                clickedButton.classList.add('wrong-feedback');
-
-                allButtons.forEach(btn => {
-                    if (btn.textContent === correctAnimal.emoji) {
-                        btn.classList.add('correct-feedback');
+                document.getElementById('closeInstructionBtn').addEventListener('click', () => {
+                    this.hideInstructionModal();
+                    this.startGame();
+                });
+            }
+            
+            generateTargetPattern() {
+                this.targetPattern = [];
+                const availableColors = this.colors.slice(0, Math.min(3 + this.level, this.colors.length));
+                
+                for (let i = 0; i < this.gridSize * this.gridSize; i++) {
+                    const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+                    this.targetPattern.push(randomColor);
+                }
+                
+                this.displayTargetPattern();
+            }
+            
+            displayTargetPattern() {
+                const container = document.getElementById('targetPattern');
+                container.innerHTML = '';
+                container.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr)`;
+                
+                this.targetPattern.forEach((color, index) => {
+                    const cell = document.createElement('div');
+                    cell.className = `w-12 h-12 ${color.class} rounded-lg shadow-md flex items-center justify-center text-lg`;
+                    cell.innerHTML = color.emoji;
+                    container.appendChild(cell);
+                });
+            }
+            
+            createPuzzleGrid() {
+                const container = document.getElementById('puzzleArea');
+                container.innerHTML = '';
+                container.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr)`;
+                
+                this.currentPattern = new Array(this.gridSize * this.gridSize).fill(null);
+                
+                for (let i = 0; i < this.gridSize * this.gridSize; i++) {
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold';
+                    dropZone.dataset.index = i;
+                    
+                    this.setupDropZone(dropZone);
+                    container.appendChild(dropZone);
+                }
+            }
+            
+            setupDropZone(dropZone) {
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    if(this.gameActive) {
+                        dropZone.classList.add('drag-over');
                     }
                 });
-                currentQuestionIndex++;
-
-                setTimeout(() => {
-                    loadNewQuestion();
-                }, DELAY_AFTER_FEEDBACK);
-            }
-        }
-
-        function displayGameCompleted() {
-            gameScreenEl.style.display = 'none';
-            gameOverScreenEl.style.display = 'block';
-            
-            finalScoreTextEl.textContent = `Skor kamu ${score} dari ${animals.length} soal`;
-            
-            shuffledFacts = shuffleArray(animals.filter(animal => animal.fact && animal.factSound));
-            currentFactPageIndex = 0;
-            
-            creditWatermarkEl.style.display = 'block';
-        }
-
-        function showFacts() {
-            gameOverScreenEl.style.display = 'none';
-            factsScreenEl.style.display = 'block';
-            
-            backgroundMusicEl.play().catch(e => console.error("Failed to play background music on facts screen:", e));
-
-            loadFactsPage();
-        }
-
-        function loadFactsPage() {
-            factsContentEl.innerHTML = '';
-            
-            const startIndex = currentFactPageIndex * FACTS_PER_PAGE;
-            const endIndex = Math.min(startIndex + FACTS_PER_PAGE, shuffledFacts.length);
-            
-            for (let i = startIndex; i < endIndex; i++) {
-                const fact = shuffledFacts[i];
-                const factDiv = document.createElement('div');
-                factDiv.classList.add('fact-item');
-                factDiv.innerHTML = `
-                    <h3>
-                        ${i + 1}. ${fact.name.toUpperCase()}
-                        <span style="font-size: 0.8em;">(${fact.emoji})</span>
-                        <button class="fact-speaker-button" data-sound-src="${fact.factSound}">🔊</button>
-                    </h3>
-                    <p>${fact.fact}</p>
-                `;
-                factsContentEl.appendChild(factDiv);
-            }
-
-            factsContentEl.querySelectorAll('.fact-speaker-button').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const soundSrc = event.target.dataset.soundSrc;
-                    playFactSound(soundSrc);
+                
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('drag-over');
                 });
-            });
-
-            if (currentFactPageIndex > 0) {
-                previousFactButton.style.display = 'inline-flex';
-            } else {
-                previousFactButton.style.display = 'none';
-            }
-
-            if (endIndex < shuffledFacts.length) {
-                nextFactButton.style.display = 'inline-flex';
-                playAgainButton.style.display = 'none';
-            } else {
-                nextFactButton.style.display = 'none';
-                playAgainButton.style.display = 'inline-flex';
-            }
-            
-            factsScreenEl.scrollTop = 0;
-        }
-
-        function nextFacts() {
-            currentFactPageIndex++;
-            loadFactsPage();
-        }
-
-        function previousFacts() {
-            currentFactPageIndex--;
-            if (currentFactPageIndex < 0) {
-                currentFactPageIndex = 0;
-            }
-            loadFactsPage();
-        }
-
-        function playAgain() {
-            factsScreenEl.style.display = 'none';
-            score = 0;
-            scoreEl.textContent = score;
-            currentQuestionIndex = 0;
-            answeredQuestions = shuffleArray([...animals]);
-            gameScreenEl.style.display = 'block';
-            
-            choicesContainerEl.style.display = 'grid';
-            questionMarkDisplayEl.style.display = 'flex';
-            instructionsTextEl.style.display = 'inline';
-            playInstructionSoundBtn.style.display = 'inline-block';
-            feedbackEl.innerHTML = '';
-            
-            backgroundMusicEl.play().catch(e => {
-                console.error("Autoplay of background music failed on playAgain:", e);
-            });
-            
-            creditWatermarkEl.style.display = 'none';
-            
-            loadNewQuestion();
-        }
-
-        function playFactSound(soundSrc) {
-            if (!factSoundPlayerEl.paused) {
-                factSoundPlayerEl.pause();
-                factSoundPlayerEl.currentTime = 0;
-            }
-            factSoundPlayerEl.src = soundSrc;
-            factSoundPlayerEl.play().catch(e => console.error("Error playing fact sound:", e));
-        }
-
-        // Event listeners
-        questionMarkDisplayEl.addEventListener('click', playAnimalSoundWithEffect);
-        volumeSliderEl.addEventListener('input', (event) => {
-            backgroundMusicEl.volume = event.target.value;
-            gameSoundEl.volume = event.target.value;
-            feedbackSoundEl.volume = event.target.value;
-            clickEffectSoundEl.volume = event.target.value;
-            correctAnimalSoundEl.volume = event.target.value;
-            factSoundPlayerEl.volume = event.target.value;
-        });
-        playInstructionSoundBtn.addEventListener('click', playInstructionSound);
-        showFactsButton.addEventListener('click', showFacts);
-        previousFactButton.addEventListener('click', previousFacts);
-        nextFactButton.addEventListener('click', nextFacts);
-        playAgainButton.addEventListener('click', playAgain);
-
-
-        // =========================================================
-        // PENGATURAN AWAL GAME (Penting untuk Autoplay Musik)
-        // =========================================================
-
-        function tryPlayBackgroundMusic() {
-            backgroundMusicEl.src = gameSounds.backgroundMusic;
-            backgroundMusicEl.volume = 0.1;
-            volumeSliderEl.value = 0.1;
-            
-            backgroundMusicEl.currentTime = 0;
-
-            backgroundMusicEl.play().catch(e => {
-                console.error("Autoplay of background music failed:", e);
-                document.body.addEventListener('click', enableBackgroundMusic, { once: true });
-                document.body.addEventListener('touchend', enableBackgroundMusic, { once: true });
-            });
-        }
-
-        function enableBackgroundMusic() {
-            if (backgroundMusicEl.paused) {
-                backgroundMusicEl.play().catch(e => {
-                    console.error("Failed to play background music on user interaction:", e);
+                
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('drag-over');
+                    
+                    if (this.draggedElement && this.gameActive) {
+                        const colorData = JSON.parse(this.draggedElement.dataset.color);
+                        const index = parseInt(dropZone.dataset.index);
+                        
+                        this.placePiece(dropZone, colorData, index);
+                        this.checkPattern();
+                    }
+                });
+                
+                // Touch support for mobile
+                dropZone.addEventListener('click', () => {
+                    if (this.selectedColor && this.gameActive) {
+                        const index = parseInt(dropZone.dataset.index);
+                        this.placePiece(dropZone, this.selectedColor, index);
+                        this.checkPattern();
+                    }
                 });
             }
-            document.body.removeEventListener('click', enableBackgroundMusic);
-            document.body.removeEventListener('touchend', enableBackgroundMusic);
-        }
-
-        // --- MENGATUR TOMBOL SUARA INSTRUKSI ---
-        function playInstructionSound() {
-            gameSoundEl.src = gameSounds.instruction;
-            gameSoundEl.play().catch(e => console.error("Error playing instruction sound:", e));
-        }
-
-        // Inisialisasi game saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', () => {
-            tryPlayBackgroundMusic();
             
-            answeredQuestions = shuffleArray([...animals]);
-            loadNewQuestion();
+            placePiece(dropZone, colorData, index) {
+                dropZone.className = `drop-zone filled w-12 h-12 ${colorData.class} rounded-lg flex items-center justify-center text-lg font-bold shadow-lg`;
+                dropZone.innerHTML = colorData.emoji;
+                this.currentPattern[index] = colorData;
+                
+                // Add success animation
+                dropZone.classList.add('success-animation');
+                setTimeout(() => dropZone.classList.remove('success-animation'), 600);
+            }
+            
+            createColorPieces() {
+                const container = document.getElementById('piecesContainer');
+                container.innerHTML = '';
+                
+                const availableColors = this.colors.slice(0, Math.min(3 + this.level, this.colors.length));
+                
+                availableColors.forEach(color => {
+                    const piece = document.createElement('div');
+                    piece.className = `puzzle-piece w-10 h-10 ${color.class} rounded-lg shadow-lg flex items-center justify-center text-sm font-bold cursor-pointer hover:scale-110`;
+                    piece.innerHTML = color.emoji;
+                    piece.draggable = true;
+                    piece.dataset.color = JSON.stringify(color);
+                    
+                    piece.addEventListener('dragstart', (e) => {
+                        if (this.gameActive) {
+                            this.draggedElement = piece;
+                            piece.classList.add('dragging');
+                        }
+                    });
+                    
+                    piece.addEventListener('dragend', () => {
+                        piece.classList.remove('dragging');
+                        this.draggedElement = null;
+                    });
+                    
+                    // Touch/click support
+                    piece.addEventListener('click', () => {
+                        if (this.gameActive) {
+                            document.querySelectorAll('.puzzle-piece').forEach(p => p.classList.remove('ring-4', 'ring-blue-400'));
+                            
+                            piece.classList.add('ring-4', 'ring-blue-400');
+                            this.selectedColor = color;
+                        }
+                    });
+                    
+                    container.appendChild(piece);
+                });
+            }
+            
+            checkPattern() {
+                let matches = 0;
+                let allFilled = true;
+                
+                for (let i = 0; i < this.currentPattern.length; i++) {
+                    if (!this.currentPattern[i]) {
+                        allFilled = false;
+                        continue;
+                    }
+                    
+                    if (this.currentPattern[i].name === this.targetPattern[i].name) {
+                        matches++;
+                    }
+                }
+                
+                if (allFilled && matches === this.targetPattern.length) {
+                    this.completePuzzle();
+                }
+            }
+            
+            completePuzzle() {
+                this.gameActive = false;
+                clearInterval(this.timer);
+                this.correct++;
+                
+                document.getElementById('completionTime').textContent = this.initialTime - this.timeLeft;
+                document.getElementById('completionLevel').textContent = this.level;
+                document.getElementById('successModal').classList.remove('hidden');
+                
+                this.createSparkleEffects();
+                
+                this.updateDisplay();
+            }
+            
+            createSparkleEffects() {
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const sparkle = document.createElement('div');
+                        sparkle.className = 'sparkle fixed pointer-events-none text-3xl z-50';
+                        sparkle.innerHTML = '✨';
+                        sparkle.style.left = Math.random() * window.innerWidth + 'px';
+                        sparkle.style.top = Math.random() * window.innerHeight + 'px';
+                        
+                        document.body.appendChild(sparkle);
+                        setTimeout(() => sparkle.remove(), 1000);
+                    }, i * 100);
+                }
+            }
+            
+            startGame() {
+                if(this.gameActive) return;
+                this.gameActive = true;
+                this.timeLeft = this.initialTime;
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    this.updateDisplay();
+                    
+                    if (this.timeLeft <= 0) {
+                        this.gameOver();
+                    }
+                }, 1000);
+            }
+            
+            pauseGame() {
+                this.gameActive = false;
+                clearInterval(this.timer);
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+            }
+            
+            gameOver() {
+                this.gameActive = false;
+                clearInterval(this.timer);
+                alert('Waktu habis! Coba lagi ya! 😊');
+                this.resetGame();
+            }
+            
+            resetGame() {
+                this.gameActive = false;
+                this.timeLeft = this.initialTime;
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                this.clearPuzzle();
+                this.updateDisplay();
+            }
+            
+            clearPuzzle() {
+                this.currentPattern = new Array(this.gridSize * this.gridSize).fill(null);
+                const dropZones = document.querySelectorAll('.drop-zone');
+                dropZones.forEach(zone => {
+                    zone.className = 'drop-zone w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold';
+                    zone.innerHTML = '';
+                });
+            }
+            
+            showHint() {
+                if (!this.gameActive) return;
+                const emptyIndex = this.currentPattern.findIndex(piece => piece === null);
+                if (emptyIndex !== -1) {
+                    const targetColor = this.targetPattern[emptyIndex];
+                    const dropZone = document.querySelector(`[data-index="${emptyIndex}"]`);
+                    
+                    const colorPieces = document.querySelectorAll('.puzzle-piece');
+                    colorPieces.forEach(piece => {
+                        const pieceColor = JSON.parse(piece.dataset.color);
+                        if (pieceColor.name === targetColor.name) {
+                            piece.classList.add('ring-4', 'ring-yellow-400');
+                            setTimeout(() => piece.classList.remove('ring-4', 'ring-yellow-400'), 2000);
+                        }
+                    });
+                    
+                    dropZone.classList.add('ring-4', 'ring-yellow-400');
+                    setTimeout(() => dropZone.classList.remove('ring-4', 'ring-yellow-400'), 2000);
+                }
+            }
+            
+            generateNewPattern() {
+                this.generateTargetPattern();
+                this.clearPuzzle();
+            }
+            
+            nextLevel() {
+                this.level++;
+                if (this.level % 3 === 0 && this.gridSize < 5) {
+                    this.gridSize++;
+                }
+                
+                document.getElementById('successModal').classList.add('hidden');
+                this.generateTargetPattern();
+                this.createPuzzleGrid();
+                this.createColorPieces();
+                this.updateDisplay();
+                this.startGame();
+            }
+            
+            updateDisplay() {
+                const minutes = Math.floor(this.timeLeft / 60);
+                const seconds = this.timeLeft % 60;
+                
+                const formattedMinutes = String(minutes).padStart(2, '0');
+                const formattedSeconds = String(seconds).padStart(2, '0');
+                
+                document.getElementById('correct').textContent = this.correct;
+                document.getElementById('level').textContent = this.level;
+                document.getElementById('timer').textContent = `${formattedMinutes}:${formattedSeconds}`;
+            }
+        }
+        
+        window.addEventListener('load', () => {
+            const game = new ColorPuzzleGame();
+            
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            document.addEventListener('wheel', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            document.addEventListener('keydown', function(e) {
+                if([32, 33, 34, 35, 36, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                    e.preventDefault();
+                }
+            });
         });
-
-</script>
-
-</body>
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e95e1283ba5f6a',t:'MTc1NTEwMDIxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
-
